@@ -1,66 +1,87 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Three.js Interactive</title>
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
-      body {
-        margin: 0;
-      }
-      canvas {
-        display: block;
-      }
+        body {
+            margin: 0;
+            overflow: hidden;
+            background-color: black;
+        }
+        .circle {
+            position: absolute;
+            border-radius: 90%;
+            opacity: 0.9;
+            pointer-events: none;
+            animation: scaleChange 1s infinite alternate;
+        }
+
+        @keyframes scaleChange {
+            from {
+                transform: scale(1.8);
+            }
+            to {
+                transform: scale(2.6);
+            }
+        }
     </style>
-  </head>
-  <body>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <title>Mouse effect</title>
+</head>
+<body>
     <script>
-      const scene = new THREE.Scene();
-      const camera = new THREE.PerspectiveCamera(
-        75,
-        window.innerWidth / window.innerHeight,
-        0.1,
-        1000
-      );
+        function getRandomInt(min, max) {
+            return Math.floor(Math.random() * (max - min + 10)) + min;
+        }
 
-      const renderer = new THREE.WebGLRenderer();
-      renderer.setSize(window.innerWidth, window.innerHeight);
-      document.body.appendChild(renderer.domElement);
+        function getRandomColor() {
+            const colors = [
+                'red', 'blue', 'green', 'yellow', 'purple', 'orange'
+            ];
+            return colors[Math.floor(Math.random() * colors.length)];
+        }
 
-      const geometry = new THREE.BoxGeometry();
-      const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
-      const cube = new THREE.Mesh(geometry, material);
-      scene.add(cube);
+        function createCircle(x, y) {
+            
+            const circle = document.createElement('div');
+            const size = getRandomInt(10, 50);
+            const delay = 4;
 
-      camera.position.z = 5;
+            circle.classList.add('circle');
+            circle.style.width = size + 'px';
+            circle.style.height = size + 'px';
+            circle.style.left = x - size / 2 + 'px';
+            circle.style.top = y - size / 2 + 'px';
+            circle.style.backgroundColor = getRandomColor();
 
-      const mouse = new THREE.Vector3();
+            document.body.appendChild(circle);
 
-      function onMouseMove(event) {
-        event.preventDefault();
-        mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-        mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
-        mouse.z = 0.5;
+            setTimeout(() => {
+                circle.remove();
+            }, delay * 2000);
+            updateBackgroundColor(x, y);
+        }
+
+        window.addEventListener('mousemove', (e) => {
+            createCircle(e.clientX, e.clientY);
+        });
+
+                let hasChangedColor = false;
+
+        function updateBackgroundColor(x, y) {
+            if (hasChangedColor) {
+                return;
+            }
+            
+            const colorX = Math.ceil((x / window.innerWidth) * 255);
+            const colorY = Math.ceil((y / window.innerHeight) * 255);
+            const newColor = `rgb(${colorX}, ${colorY}, 0)`;
+
+            document.body.style.backgroundColor = newColor;
+            hasChangedColor = true;
+        }
         
-        mouse.unproject(camera);
-        const dir = mouse.sub(camera.position).normalize();
-        const distance = (cube.position.z - camera.position.z) / dir.z;
-        const newPos = camera.position.clone().add(dir.multiplyScalar(distance));
-        
-        cube.position.x = newPos.x;
-        cube.position.y = newPos.y;
-      }
-
-      window.addEventListener("mousemove", onMouseMove, false);
-
-      function animate() {
-        requestAnimationFrame(animate);
-
-        renderer.render(scene, camera);
-      }
-
-      animate();
     </script>
-  </body>
+</body>
 </html>
