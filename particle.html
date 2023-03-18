@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            background-color: black;
+        }
+        .circle {
+            position: absolute;
+            border-radius: 90%;
+            opacity: 0.9;
+            pointer-events: none;
+            animation: scaleChange 1s infinite alternate;
+        }
+
+        @keyframes scaleChange {
+            from {
+                transform: scale(1.8);
+            }
+            to {
+                transform: scale(2.6);
+            }
+        }
+    </style>
+    <title>Mouse effect</title>
+</head>
+<body>
+    <script>
+        function getRandomInt(min, max) {
+            return Math.floor(Math.random() * (max - min + 10)) + min;
+        }
+
+        function getRandomColor() {
+            const colors = [
+                'red', 'blue', 'green', 'yellow', 'purple', 'orange'
+            ];
+            return colors[Math.floor(Math.random() * colors.length)];
+        }
+
+        function createCircle(x, y) {
+            
+            const circle = document.createElement('div');
+            const size = getRandomInt(10, 50);
+            const delay = 4;
+
+            circle.classList.add('circle');
+            circle.style.width = size + 'px';
+            circle.style.height = size + 'px';
+            circle.style.left = x - size / 2 + 'px';
+            circle.style.top = y - size / 2 + 'px';
+            circle.style.backgroundColor = getRandomColor();
+
+            document.body.appendChild(circle);
+
+            setTimeout(() => {
+                circle.remove();
+            }, delay * 2000);
+            updateBackgroundColor(x, y);
+        }
+
+        window.addEventListener('mousemove', (e) => {
+            createCircle(e.clientX, e.clientY);
+        });
+
+                let hasChangedColor = false;
+
+        function updateBackgroundColor(x, y) {
+            if (hasChangedColor) {
+                return;
+            }
+            
+            const colorX = Math.ceil((x / window.innerWidth) * 255);
+            const colorY = Math.ceil((y / window.innerHeight) * 255);
+            const newColor = `rgb(${colorX}, ${colorY}, 0)`;
+
+            document.body.style.backgroundColor = newColor;
+            hasChangedColor = true;
+        }
+        
+    </script>
+</body>
+</html>
